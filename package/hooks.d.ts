@@ -5,13 +5,3 @@ export declare function addAuthToSession(request: any): {
     authenticated: any;
 };
 export declare function onAuthStateChange(event: any, sb_session: any): Promise<void>;
-export declare function authorizeOnLoad(openPaths: any, loginPath: any): ({ url, session }: {
-    url: any;
-    session: any;
-}) => Promise<{
-    status?: undefined;
-    redirect?: undefined;
-} | {
-    status: number;
-    redirect: any;
-}>;

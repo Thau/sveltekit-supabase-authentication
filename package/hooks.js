@@ -1,43 +1,8 @@
 import { parse } from 'cookie';
 import { session } from '$app/stores';
 import { sequence } from '@sveltejs/kit/hooks';
-async function handleApiSetAuthCookie({ request, resolve }) {
-    const { url, method, body } = request;
-    if (url.pathname === '/api/setAuthCookie' && method === 'POST') {
-        const { session } = body;
-        return {
-            status: 200,
-            headers: {
-                'Set-Cookie': `session=${JSON.stringify(session)};SameSite=Strict;Path=/`
-            }
-        };
-    }
-    const response = await resolve(request);
-    return {
-        ...response,
-        headers: {
-            ...response.headers
-        }
-    };
-}
-async function handleApiDestroyAuthCookie({ request, resolve }) {
-    const { url, method } = request;
-    if (url.pathname === '/api/destroyAuthCookie' && method === 'POST') {
-        return {
-            status: 200,
-            headers: {
-                'Set-Cookie': `session="{}";Max-Age=0;SameSite=Strict;Path=/`
-            }
-        };
-    }
-    const response = await resolve(request);
-    return {
-        ...response,
-        headers: {
-            ...response.headers
-        }
-    };
-}
+import { handleApiSetAuthCookie } from './handleApiSetAuthCookie';
+import { handleApiDestroyAuthCookie } from './handleApiDestroyAuthCookie';
 function handleAuthCookie(supabase) {
     return async function ({ request, resolve }) {
         // Parse available cookies
@@ -93,23 +58,4 @@ export async function onAuthStateChange(event, sb_session) {
         });
         session.set({});
     }
-}
-export function authorizeOnLoad(openPaths, loginPath) {
-    return async function ({ url, session }) {
-        openPaths.push(loginPath);
-        const loggedIn = session.authenticated;
-        if (loggedIn && url.pathname === loginPath) {
-            // If we're already logged in, just go back.
-            return { status: 302, redirect: '/' };
-        }
-        else if (loggedIn || openPaths.indexOf(url.pathname) > -1) {
-            // Even if we're not logged in, if the URL path belongs to the open list,
-            // we allow access
-            return {};
-        }
-        else {
-            // Otherwise, we redirect to login
-            return { status: 302, redirect: loginPath };
-        }
-    };
 }

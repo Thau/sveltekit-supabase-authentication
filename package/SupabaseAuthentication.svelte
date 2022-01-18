@@ -1,5 +1,5 @@
 <script context="module">
-	import { authorizeOnLoad } from './hooks';
+	import { authorizeOnLoad } from './authorizeOnLoad.js';
 	export let openPaths;
 	export let loginPath;
 
